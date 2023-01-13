@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/felix1369/golang-api/model/entity"
+	"github.com/felix1369/golang-api/model/interfaces"
 )
 
 type mysqlRoleInfrastructure struct {
@@ -11,7 +12,7 @@ type mysqlRoleInfrastructure struct {
 }
 
 // NewMysqlRole will create an object that represent the role.Repository interface
-func NewMysqlRole(db DBHandler) entity.RoleInfrastructure {
+func NewMysqlRole(db DBHandler) interfaces.RoleRepository {
 	return &mysqlRoleInfrastructure{db}
 }
 

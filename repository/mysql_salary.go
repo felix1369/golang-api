@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/felix1369/golang-api/model/entity"
+	"github.com/felix1369/golang-api/model/interfaces"
 )
 
 type mysqlSalaryInfrastructure struct {
@@ -11,7 +12,7 @@ type mysqlSalaryInfrastructure struct {
 }
 
 // NewMysqlSalary will create an object that represent the salary.Repository interface
-func NewMysqlSalary(db DBHandler) entity.SalaryInfrastructure {
+func NewMysqlSalary(db DBHandler) interfaces.SalaryRepository {
 	return &mysqlSalaryInfrastructure{db}
 }
 

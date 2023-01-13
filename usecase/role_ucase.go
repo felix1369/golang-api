@@ -6,26 +6,27 @@ import (
 
 	"github.com/felix1369/golang-api/model"
 	"github.com/felix1369/golang-api/model/entity"
+	"github.com/felix1369/golang-api/model/interfaces"
 )
 
-type articleUsecase struct {
-	articleRepo    entity.RoleInfrastructure
+type roleUsecase struct {
+	roleRepo       interfaces.RoleRepository
 	contextTimeout time.Duration
 }
 
-// NewArticleUsecase will create new an articleUsecase object representation of domain.ArticleUsecase interface
-func NewArticleUsecase(a entity.RoleInfrastructure, ar entity.Role, timeout time.Duration) entity.RoleApplication {
-	return &articleUsecase{
-		articleRepo:    a,
+// NewRoleUsecase will create new an roleUsecase object representation of domain.RoleUsecase interface
+func NewRoleUsecase(a interfaces.RoleRepository, ar entity.Role, timeout time.Duration) interfaces.RoleUseCase {
+	return &roleUsecase{
+		roleRepo:       a,
 		contextTimeout: timeout,
 	}
 }
 
-func (a *articleUsecase) Fetch(c context.Context) (res []entity.Role, err error) {
+func (a *roleUsecase) Fetch(c context.Context) (res []entity.Role, err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
-	res, err = a.articleRepo.Fetch(ctx, "")
+	res, err = a.roleRepo.Fetch(ctx, "")
 	if err != nil {
 		return nil, err
 	}
@@ -33,11 +34,11 @@ func (a *articleUsecase) Fetch(c context.Context) (res []entity.Role, err error)
 	return
 }
 
-func (a *articleUsecase) GetByID(c context.Context, id int64) (res entity.Role, err error) {
+func (a *roleUsecase) GetByID(c context.Context, id int64) (res entity.Role, err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
-	res, err = a.articleRepo.GetByID(ctx, id)
+	res, err = a.roleRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
@@ -45,45 +46,45 @@ func (a *articleUsecase) GetByID(c context.Context, id int64) (res entity.Role, 
 	return
 }
 
-func (a *articleUsecase) Update(c context.Context, ar *entity.Role) (err error) {
+func (a *roleUsecase) Update(c context.Context, ar *entity.Role) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
 	ar.UpdatedAt = time.Now()
-	return a.articleRepo.Update(ctx, ar)
+	return a.roleRepo.Update(ctx, ar)
 }
 
-func (a *articleUsecase) GetByName(c context.Context, title string) (res entity.Role, err error) {
+func (a *roleUsecase) GetByName(c context.Context, title string) (res entity.Role, err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	res, err = a.articleRepo.GetByName(ctx, title)
+	res, err = a.roleRepo.GetByName(ctx, title)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (a *articleUsecase) Store(c context.Context, m *entity.Role) (err error) {
+func (a *roleUsecase) Store(c context.Context, m *entity.Role) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	existedArticle, _ := a.GetByName(ctx, m.Name)
-	if existedArticle != (entity.Role{}) {
+	existedRole, _ := a.GetByName(ctx, m.Name)
+	if existedRole != (entity.Role{}) {
 		return model.ErrConflict
 	}
 
-	err = a.articleRepo.Store(ctx, m)
+	err = a.roleRepo.Store(ctx, m)
 	return
 }
 
-func (a *articleUsecase) Delete(c context.Context, id int64) (err error) {
+func (a *roleUsecase) Delete(c context.Context, id int64) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	existedArticle, err := a.articleRepo.GetByID(ctx, id)
+	existedRole, err := a.roleRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
-	if existedArticle == (entity.Role{}) {
+	if existedRole == (entity.Role{}) {
 		return model.ErrNotFound
 	}
-	return a.articleRepo.Delete(ctx, id)
+	return a.roleRepo.Delete(ctx, id)
 }
