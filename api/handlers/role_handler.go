@@ -1,4 +1,4 @@
-package http
+package handlers
 
 import (
 	"net/http"
@@ -17,13 +17,13 @@ type ResponseError struct {
 	Message string `json:"message"`
 }
 
-// ArticleHandler  represent the httphandler for article
+// RoleHandler  represent the httphandler for role
 type RoleHandler struct {
 	RoleUsecase interfaces.RoleUseCase
 }
 
-// NewArticleHandler will initialize the role/ resources endpoint
-func NewArticleHandler(e *echo.Echo, us interfaces.RoleUseCase) {
+// NewRoleHandler will initialize the role/ resources endpoint
+func NewRoleHandler(e *echo.Echo, us interfaces.RoleUseCase) {
 	handler := &RoleHandler{
 		RoleUsecase: us,
 	}

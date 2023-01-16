@@ -15,7 +15,7 @@ type salaryUsecase struct {
 }
 
 // NewSalaryUsecase will create new an salaryUsecase object representation of domain.SalaryUsecase interface
-func NewSalaryUsecase(a interfaces.SalaryRepository, ar entities.Salary, timeout time.Duration) interfaces.SalaryUsecase {
+func NewSalaryUsecase(a interfaces.SalaryRepository, timeout time.Duration) interfaces.SalaryUsecase {
 	return &salaryUsecase{
 		salaryRepo:     a,
 		contextTimeout: timeout,

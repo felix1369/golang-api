@@ -15,7 +15,7 @@ type roleUsecase struct {
 }
 
 // NewRoleUsecase will create new an roleUsecase object representation of domain.RoleUsecase interface
-func NewRoleUsecase(a interfaces.RoleRepository, ar entities.Role, timeout time.Duration) interfaces.RoleUseCase {
+func NewRoleUsecase(a interfaces.RoleRepository, timeout time.Duration) interfaces.RoleUseCase {
 	return &roleUsecase{
 		roleRepo:       a,
 		contextTimeout: timeout,
