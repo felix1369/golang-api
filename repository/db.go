@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/felix1369/golang-api/infrastructure/util"
-	"github.com/felix1369/golang-api/model/entity"
+	"github.com/felix1369/golang-api/model/entities"
+	"github.com/felix1369/golang-api/repository/utils"
 	"github.com/jinzhu/gorm"
 )
 
@@ -435,7 +435,7 @@ func (it *db) RowsToJSON() ([]byte, error) {
 			val := values[i]
 			b, ok := val.([]byte)
 			if ok {
-				if util.IsFloat(b) {
+				if utils.IsFloat(b) {
 					num, err := strconv.ParseFloat(strings.TrimSpace(string(b)), 64)
 					if err != nil {
 						return nil, err
@@ -480,7 +480,7 @@ func (it *db) RowsToJSONArray() ([][]byte, error) {
 			val := values[i]
 			b, ok := val.([]byte)
 			if ok {
-				if util.IsFloat(b) {
+				if utils.IsFloat(b) {
 					num, err := strconv.ParseFloat(strings.TrimSpace(string(b)), 64)
 					if err != nil {
 						return nil, err
@@ -508,33 +508,33 @@ func (it *db) SaveJSONByTable(table string, dataJSON []byte) error {
 	var data interface{}
 	switch table {
 	case "employe":
-		data = &entity.Employe{}
+		data = &entities.Employe{}
 		err := json.Unmarshal(dataJSON, &data)
 		if err != nil {
 			return err
 		}
-		h.Model(entity.Employe{})
+		h.Model(entities.Employe{})
 	case "payslip":
-		data = &entity.Payslip{}
+		data = &entities.Payslip{}
 		err := json.Unmarshal(dataJSON, &data)
 		if err != nil {
 			return err
 		}
-		h.Model(entity.Payslip{})
+		h.Model(entities.Payslip{})
 	case "role":
-		data = &entity.Role{}
+		data = &entities.Role{}
 		err := json.Unmarshal(dataJSON, &data)
 		if err != nil {
 			return err
 		}
-		h.Model(entity.Employe{})
+		h.Model(entities.Employe{})
 	case "salary":
-		data = &entity.Salary{}
+		data = &entities.Salary{}
 		err := json.Unmarshal(dataJSON, &data)
 		if err != nil {
 			return err
 		}
-		h.Model(entity.Salary{})
+		h.Model(entities.Salary{})
 	default:
 		return errors.New("no model table found to safe data")
 	}
@@ -550,10 +550,10 @@ func (it *db) SaveJSONByTable(table string, dataJSON []byte) error {
 
 func AutoMigrate(db DBHandler) DBHandler {
 	db.AutoMigrate(
-		&entity.Employe{},
-		&entity.Payslip{},
-		&entity.Role{},
-		&entity.Salary{},
+		&entities.Employe{},
+		&entities.Payslip{},
+		&entities.Role{},
+		&entities.Salary{},
 	)
 
 	extensionTablefunc := "CREATE EXTENSION IF NOT EXISTS tablefunc"

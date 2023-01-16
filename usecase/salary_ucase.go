@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/felix1369/golang-api/model"
-	"github.com/felix1369/golang-api/model/entity"
+	"github.com/felix1369/golang-api/model/entities"
 	"github.com/felix1369/golang-api/model/interfaces"
 )
 
@@ -15,14 +15,14 @@ type salaryUsecase struct {
 }
 
 // NewSalaryUsecase will create new an salaryUsecase object representation of domain.SalaryUsecase interface
-func NewSalaryUsecase(a interfaces.SalaryRepository, ar entity.Salary, timeout time.Duration) interfaces.SalaryUsecase {
+func NewSalaryUsecase(a interfaces.SalaryRepository, ar entities.Salary, timeout time.Duration) interfaces.SalaryUsecase {
 	return &salaryUsecase{
 		salaryRepo:     a,
 		contextTimeout: timeout,
 	}
 }
 
-func (a *salaryUsecase) Fetch(c context.Context) (res []entity.Salary, err error) {
+func (a *salaryUsecase) Fetch(c context.Context) (res []entities.Salary, err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
@@ -34,7 +34,7 @@ func (a *salaryUsecase) Fetch(c context.Context) (res []entity.Salary, err error
 	return
 }
 
-func (a *salaryUsecase) GetByID(c context.Context, id int64) (res entity.Salary, err error) {
+func (a *salaryUsecase) GetByID(c context.Context, id uint) (res entities.Salary, err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
@@ -46,7 +46,7 @@ func (a *salaryUsecase) GetByID(c context.Context, id int64) (res entity.Salary,
 	return
 }
 
-func (a *salaryUsecase) Update(c context.Context, ar *entity.Salary) (err error) {
+func (a *salaryUsecase) Update(c context.Context, ar *entities.Salary) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 
@@ -54,21 +54,21 @@ func (a *salaryUsecase) Update(c context.Context, ar *entity.Salary) (err error)
 	return a.salaryRepo.Update(ctx, ar)
 }
 
-func (a *salaryUsecase) GetByRole(c context.Context, title string) (res entity.Salary, err error) {
+func (a *salaryUsecase) GetByRoleId(c context.Context, roleId uint) (res entities.Salary, err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	res, err = a.salaryRepo.GetByRole(ctx, title)
+	res, err = a.salaryRepo.GetByRoleId(ctx, roleId)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (a *salaryUsecase) Store(c context.Context, m *entity.Salary) (err error) {
+func (a *salaryUsecase) Store(c context.Context, m *entities.Salary) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
-	existedSalary, _ := a.GetByRole(ctx, m.Role.Name)
-	if existedSalary != (entity.Salary{}) {
+	existedSalary, _ := a.GetByRoleId(ctx, m.Role.ID)
+	if existedSalary != (entities.Salary{}) {
 		return model.ErrConflict
 	}
 
@@ -76,14 +76,14 @@ func (a *salaryUsecase) Store(c context.Context, m *entity.Salary) (err error) {
 	return
 }
 
-func (a *salaryUsecase) Delete(c context.Context, id int64) (err error) {
+func (a *salaryUsecase) Delete(c context.Context, id uint) (err error) {
 	ctx, cancel := context.WithTimeout(c, a.contextTimeout)
 	defer cancel()
 	existedSalary, err := a.salaryRepo.GetByID(ctx, id)
 	if err != nil {
 		return
 	}
-	if existedSalary == (entity.Salary{}) {
+	if existedSalary == (entities.Salary{}) {
 		return model.ErrNotFound
 	}
 	return a.salaryRepo.Delete(ctx, id)

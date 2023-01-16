@@ -3,7 +3,7 @@ package infrastructure
 import (
 	"context"
 
-	"github.com/felix1369/golang-api/model/entity"
+	"github.com/felix1369/golang-api/model/entities"
 	"github.com/felix1369/golang-api/model/interfaces"
 )
 
@@ -16,7 +16,7 @@ func NewMysqlSalary(db DBHandler) interfaces.SalaryRepository {
 	return &mysqlSalaryInfrastructure{db}
 }
 
-func (m *mysqlSalaryInfrastructure) Fetch(ctx context.Context, query string, args ...interface{}) (res []entity.Salary, err error) {
+func (m *mysqlSalaryInfrastructure) Fetch(ctx context.Context, query string, args ...interface{}) (res []entities.Salary, err error) {
 	if m.DB.Find(&res, "").Error() != nil {
 		return nil, m.DB.Error()
 	}
@@ -24,7 +24,7 @@ func (m *mysqlSalaryInfrastructure) Fetch(ctx context.Context, query string, arg
 	return
 }
 
-func (m *mysqlSalaryInfrastructure) GetByID(ctx context.Context, id int64) (res entity.Salary, err error) {
+func (m *mysqlSalaryInfrastructure) GetByID(ctx context.Context, id uint) (res entities.Salary, err error) {
 	if m.DB.Find(&res, "").Where("id = ", id).Error() != nil {
 		return res, m.DB.Error()
 	}
@@ -32,15 +32,15 @@ func (m *mysqlSalaryInfrastructure) GetByID(ctx context.Context, id int64) (res 
 	return
 }
 
-func (m *mysqlSalaryInfrastructure) GetByRole(ctx context.Context, role string) (res entity.Salary, err error) {
-	if m.DB.Find(&res, "").Where("role = ", role).Error() != nil {
+func (m *mysqlSalaryInfrastructure) GetByRoleId(ctx context.Context, roleId uint) (res entities.Salary, err error) {
+	if m.DB.Find(&res, "").Where("role = ", roleId).Error() != nil {
 		return res, m.DB.Error()
 	}
 
 	return
 }
 
-func (m *mysqlSalaryInfrastructure) Store(ctx context.Context, a *entity.Salary) (err error) {
+func (m *mysqlSalaryInfrastructure) Store(ctx context.Context, a *entities.Salary) (err error) {
 	trx := m.DB.Begin()
 	if m.DB.Create(a).Error() != nil {
 		trx.Rollback()
@@ -51,8 +51,8 @@ func (m *mysqlSalaryInfrastructure) Store(ctx context.Context, a *entity.Salary)
 	return
 }
 
-func (m *mysqlSalaryInfrastructure) Delete(ctx context.Context, id int64) (err error) {
-	data := entity.Salary{}
+func (m *mysqlSalaryInfrastructure) Delete(ctx context.Context, id uint) (err error) {
+	data := entities.Salary{}
 	trx := m.DB.Begin()
 	if m.DB.Delete(data).Error() != nil {
 		trx.Rollback()
@@ -62,7 +62,7 @@ func (m *mysqlSalaryInfrastructure) Delete(ctx context.Context, id int64) (err e
 
 	return
 }
-func (m *mysqlSalaryInfrastructure) Update(ctx context.Context, ar *entity.Salary) (err error) {
+func (m *mysqlSalaryInfrastructure) Update(ctx context.Context, ar *entities.Salary) (err error) {
 	trx := m.DB.Begin()
 	if m.DB.Delete(ar).Error() != nil {
 		trx.Rollback()
