@@ -26,6 +26,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	repository.AutoMigrate(dbConn)
+
 	defer func() {
 		err := dbConn.Close()
 		if err != nil {
@@ -40,5 +42,5 @@ func main() {
 	au := _roleUsecase.NewRoleUsecase(roleRepo, timeoutContext)
 	handlers.NewRoleHandler(r, au)
 
-	r.Run(":5000")
+	r.Run(":", config.Env.DbConn)
 }
