@@ -5,17 +5,18 @@ import (
 	"time"
 
 	"github.com/felix1369/golang-api/api/config"
+	"github.com/felix1369/golang-api/api/handlers"
 	"github.com/felix1369/golang-api/repository"
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 
-	_articleHttpDelivery "github.com/felix1369/golang-api/api/handlers"
-	_articleHttpDeliveryMiddleware "github.com/felix1369/golang-api/api/middlewares"
+	_deliveryMiddleware "github.com/felix1369/golang-api/api/middlewares"
 	_roleRepo "github.com/felix1369/golang-api/repository"
 	_roleUsecase "github.com/felix1369/golang-api/usecase"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 func main() {
-	dbConn, err := repository.OpenDB(`postgres`, config.Env.DbConn)
+	dbConn, err := repository.OpenDB("postgres", config.Env.DbConn)
 
 	if err != nil {
 		log.Fatal(err)
@@ -32,12 +33,12 @@ func main() {
 		}
 	}()
 
-	e := echo.New()
-	middL := _articleHttpDeliveryMiddleware.InitMiddleware()
-	e.Use(middL.CORS)
-	roleRepo := _roleRepo.NewMysqlRole(dbConn)
-
+	r := gin.Default()
+	r.Use(_deliveryMiddleware.CORS())
+	roleRepo := _roleRepo.NewSqlRole(dbConn)
 	timeoutContext := time.Duration(config.Env.Timeout) * time.Second
 	au := _roleUsecase.NewRoleUsecase(roleRepo, timeoutContext)
-	_articleHttpDelivery.NewRoleHandler(e, au)
+	handlers.NewRoleHandler(r, au)
+
+	r.Run(":5000")
 }

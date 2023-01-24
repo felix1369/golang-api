@@ -9,7 +9,7 @@ import (
 	"github.com/felix1369/golang-api/model"
 	"github.com/felix1369/golang-api/model/entities"
 	"github.com/felix1369/golang-api/model/interfaces"
-	"github.com/labstack/echo"
+	"github.com/gin-gonic/gin"
 )
 
 // ResponseError represent the response error struct
@@ -23,80 +23,83 @@ type RoleHandler struct {
 }
 
 // NewRoleHandler will initialize the role/ resources endpoint
-func NewRoleHandler(e *echo.Echo, us interfaces.RoleUseCase) {
+func NewRoleHandler(e *gin.Engine, us interfaces.RoleUseCase) {
 	handler := &RoleHandler{
 		RoleUsecase: us,
 	}
-	e.GET("/role", handler.FetchRole)
-	e.POST("/role", handler.Store)
-	e.GET("/role/:id", handler.GetByID)
-	e.DELETE("/role/:id", handler.Delete)
+	roleRoutes := e.Group("role")
+	{
+		roleRoutes.GET("/", handler.FetchRole)
+		roleRoutes.POST("/", handler.Store)
+		roleRoutes.GET("/:id", handler.GetByID)
+		roleRoutes.DELETE("/:id", handler.Delete)
+	}
 }
 
-func (a *RoleHandler) FetchRole(c echo.Context) error {
-	ctx := c.Request().Context()
+func (a *RoleHandler) FetchRole(c *gin.Context) {
+	ctx := c.Request.Context()
 
 	result, err := a.RoleUsecase.Fetch(ctx)
 	if err != nil {
-		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, result)
 }
 
-func (a *RoleHandler) Store(c echo.Context) (err error) {
+func (a *RoleHandler) Store(c *gin.Context) {
 	var role entities.Role
-	err = c.Bind(&role)
+	err := c.Bind(&role)
 	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
 	}
 
 	var ok bool
 	if ok, err = isRequestValid(&role); !ok {
-		return c.JSON(http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	ctx := c.Request().Context()
+	ctx := c.Request.Context()
 	err = a.RoleUsecase.Store(ctx, &role)
 	if err != nil {
-		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusCreated, role)
+	c.JSON(http.StatusCreated, role)
 }
 
-func (a *RoleHandler) GetByID(c echo.Context) error {
+func (a *RoleHandler) GetByID(c *gin.Context) {
 	idP, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, model.ErrNotFound.Error())
+		c.JSON(http.StatusNotFound, model.ErrNotFound.Error())
 	}
 
 	id := uint(idP)
-	ctx := c.Request().Context()
+	ctx := c.Request.Context()
 
 	art, err := a.RoleUsecase.GetByID(ctx, id)
 	if err != nil {
-		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
 
-	return c.JSON(http.StatusOK, art)
+	c.JSON(http.StatusOK, art)
 }
 
-func (a *RoleHandler) Delete(c echo.Context) error {
+func (a *RoleHandler) Delete(c *gin.Context) {
 	idP, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, model.ErrNotFound.Error())
+		c.JSON(http.StatusNotFound, model.ErrNotFound.Error())
 	}
 
 	id := uint(idP)
-	ctx := c.Request().Context()
+	ctx := c.Request.Context()
 
 	err = a.RoleUsecase.Delete(ctx, id)
 	if err != nil {
-		return c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
+		c.JSON(getStatusCode(err), ResponseError{Message: err.Error()})
 	}
 
-	return c.NoContent(http.StatusNoContent)
+	c.JSON(http.StatusOK, "")
 }
 
 func isRequestValid(m *entities.Role) (bool, error) {
