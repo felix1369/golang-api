@@ -1,7 +1,7 @@
 # golang-api
-Golang Api prototype with 
-    - gin gonic http framework
-    - gorm orm library
-    - GoDotEnv env
+Golang Api prototype with<br/>
+    - gin gonic http framework<br/>
+    - gorm orm library<br/>
+    - GoDotEnv env<br/>
     
-this code still under construction
+This code still under construction
