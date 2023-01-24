@@ -11,8 +11,9 @@ import (
 
 // EnvType is variable in .env file
 type EnvType struct {
-	DbConn  string
-	Timeout int
+	HttpPort string
+	DbConn   string
+	Timeout  int
 }
 
 // Env is global var for EnvType
@@ -23,6 +24,7 @@ func init() {
 		fmt.Println("No .env file found")
 	}
 
+	Env.HttpPort = getEnv("HTTP_PORT", "5000")
 	Env.DbConn = getEnv("DB_CONN", "default conn")
 	Env.Timeout = getEnvAsInt("TIMEOUT", 60)
 }
